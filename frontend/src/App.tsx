@@ -6,23 +6,23 @@ import DOMPurify from 'dompurify'
 import FieldPane from "./components/FieldPane/FieldPane";
 import {ToRender} from "./data/ToRender.interface";
 import TextPane from "./components/TextPane/TextPane";
+import {EmailFields} from "./data/EmailFields.interface";
+import EmailPane from "./components/EmailPane/EmailPane";
 
 interface State {
     rendered: TemplateRender,
     toRender: ToRender
-
+    emailFields: EmailFields
 }
 
 class App extends Component<{}, State> {
 
     constructor(props: any) {
         super(props);
-        this.state = {rendered: {
-                template:  "",
-                template_name: ""
-            },
-            toRender:
-                {fields: [], template_text: ''}
+        this.state = {
+            rendered: { template: "", template_name: "" },
+            toRender: { fields: [], template_text: '' },
+            emailFields: { from: "", to: "" }
         }
     }
 
@@ -65,10 +65,19 @@ class App extends Component<{}, State> {
         this.setState({rendered: rendered})
     }
 
+    updateEmailFields(from: string, to: string) {
+        let emailFields = {from: from, to: to};
+        this.setState({emailFields: emailFields})
+    }
+
+    async sendEmail() {
+        await Api.send_email(this.state.toRender, this.state.emailFields);
+    }
+
     render() {
         return (
             <div className="App">
-                <div className="EditorPane">
+                <div className="editor_pane">
                     <FieldPane
                         fields={this.state.toRender.fields}
                         addField={() => this.addField()}
@@ -80,13 +89,20 @@ class App extends Component<{}, State> {
                         text={this.state.toRender.template_text}
                         changeText={(event: ChangeEvent<HTMLTextAreaElement>) => this.onTextChange(event)}
                     />
-
-                    <div className="render_button" onClick={() => this.renderTemplate()}>
-                        RENDER
-                    </div>
                 </div>
 
-                <div className="previewPane" dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.state.rendered.template)}}></div>
+                <EmailPane
+                    from={this.state.emailFields.from}
+                    to={this.state.emailFields.to}
+                    sendEmail={ () => this.sendEmail() }
+                    updateEmailFields={ (from: string, to: string) => this.updateEmailFields(from, to)}
+                />
+
+                <div className="render_button" onClick={ () => this.renderTemplate() }>
+                    RENDER
+                </div>
+
+                <div className="preview_pane" dangerouslySetInnerHTML={ {__html: DOMPurify.sanitize(this.state.rendered.template)} } />
 
             </div>
         );
