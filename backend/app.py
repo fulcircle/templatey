@@ -5,7 +5,6 @@ app = Flask(__name__)
 
 @app.route('/api/template/render', methods=['POST'])
 def template_render():
-    # TODO: deal with errors
     json = request.json
     template_text = json['template_text']
     template_data = json['fields']
