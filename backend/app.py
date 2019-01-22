@@ -15,7 +15,6 @@ def get_renderer():
 
 @app.route('/api/template/render', methods=['POST'])
 def template_render():
-
     _template_renderer = get_renderer()
     render = _template_renderer.render()
 
@@ -29,9 +28,11 @@ def template_render():
 def send_template():
     _template_renderer = get_renderer()
     content = _template_renderer.render()
+
     response = SendEmail(request.json['email_fields']['from'], request.json['email_fields']['to'], 'Test', content).send()
+
     return jsonify({
-        'status_code': response.status_code,
+        'status_code': response.status_code
     })
 
 
