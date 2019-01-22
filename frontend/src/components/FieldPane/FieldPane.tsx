@@ -1,8 +1,8 @@
 import React, {ChangeEvent, Component} from 'react';
-import {TemplateField} from "../../data/TemplateField.interface";
+import {TemplateFields} from "../../data/request/TemplateFields.class";
 
 interface Props {
-    fields: Array<TemplateField>,
+    template_fields: Array<TemplateFields>,
     addField: () => void,
     removeField: (idx: number) => void,
     changeField: (event: ChangeEvent<HTMLInputElement>, idx: number, property: string) => void
@@ -16,7 +16,7 @@ class FieldPane extends Component<Props, {}> {
 
     render() {
 
-        let fields = this.props.fields.map((field, idx) => {
+        let fields = this.props.template_fields.map((field, idx) => {
             return <div key={idx} className="field">
                 <input className="field_input_name" value={field.name} onChange={(event) => this.props.changeField(event, idx, 'name')}/>
                 <input className="field_input_value" value={field.value} onChange={(event) => this.props.changeField(event, idx, 'value')}/>

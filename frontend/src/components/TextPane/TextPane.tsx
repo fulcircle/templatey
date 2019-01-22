@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
+import {ToRender} from "../../data/request/ToRender.class";
 
 interface Props {
-    text: string,
+    template_text: string,
     changeText: Function,
 }
 
@@ -15,7 +16,7 @@ class TextPane extends Component<Props, {}> {
 
         return (
             <div className="text">
-                <textarea value={this.props.text} onChange={(event) => this.props.changeText(event)} />
+                <textarea value={this.props.template_text} onChange={(event) => this.props.changeText(event)} />
             </div>
         );
     }

@@ -1,15 +1,15 @@
-import {TemplateRender} from "../data/TemplateRender.interface";
-import {ToRender} from "../data/ToRender.interface";
-import {EmailResponse} from "../data/EmailResponse.interface";
-import {EmailFields} from "../data/EmailFields.interface";
+import {TemplateRenderResponse} from "../data/response/TemplateRenderResponse.interface";
+import {ToRender} from "../data/request/ToRender.class";
+import {EmailResponse} from "../data/response/EmailResponse.interface";
+import {EmailFields} from "../data/request/EmailFields.class";
 
 export class Api {
 
-    static async render(toRender: ToRender): Promise<TemplateRender> {
+    static async render(toRender: ToRender): Promise<TemplateRenderResponse> {
 
         let json = await Api._post('/api/template/render', JSON.stringify({to_render: toRender}));
 
-        return json as TemplateRender;
+        return json as TemplateRenderResponse;
     }
 
     static async send_email(toRender: ToRender, emailFields: EmailFields): Promise<EmailResponse> {
