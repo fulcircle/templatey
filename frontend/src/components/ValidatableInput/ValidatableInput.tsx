@@ -56,6 +56,4 @@ class ValidatableInput extends Component<Props, {}> {
     }
 }
 
-ValidatableInput.contextType = ValidationContext;
-
 export default ValidatableInput;
