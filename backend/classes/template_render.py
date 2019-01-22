@@ -6,4 +6,7 @@ class TemplateRender:
         self.template_data = template_data
 
     def render(self):
-        return render_template(f'{self.template_name}.html', **self.template_data)
+        if self.template_data:
+            return render_template(f'{self.template_name}.html', **self.template_data)
+        else:
+            return render_template(f'{self.template_name}.html')

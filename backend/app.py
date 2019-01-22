@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 @app.route('/api/template/render', methods=['POST'])
 def template_render():
-    # TODO: deal with errors any errors
-    _template_render = TemplateRender('basic', {'user': 'TestUser'})
+    # TODO: deal with errors
+    _template_render = TemplateRender('basic')
     template_string = _template_render.render()
     return jsonify({
         'template': _template_render.template_name,
