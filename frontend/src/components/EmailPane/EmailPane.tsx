@@ -2,6 +2,7 @@ import React, {ChangeEvent, Component} from 'react';
 import {EmailFields} from "../../data/request/EmailFields.class";
 import {ValidationContext} from "../../App";
 import ValidatableInput from "../ValidatableInput/ValidatableInput";
+import {Button, Grid, Paper} from "@material-ui/core";
 
 interface Props {
     emailFields: EmailFields,
@@ -21,12 +22,11 @@ class EmailPane extends Component<Props, {}> {
         return (
             <ValidationContext.Consumer>
                 {({ validationErrors, pristine })  => (
-                    <div className="email">
-                        <div className="from_email">
+                    <Paper>
+                        <Grid container direction="row" wrap="nowrap">
                             <ValidatableInput
-                                className=""
                                 value={this.props.emailFields.from}
-                                textArea={false}
+                                label="From"
 
                                 validationErrors={validationErrors}
                                 pristine={pristine}
@@ -34,12 +34,9 @@ class EmailPane extends Component<Props, {}> {
                                 validationProperty={'from'}
 
                                 onChange={ (event: ChangeEvent) => this.props.updateEmailFields(event, this.props.emailFields, 'from') }/>
-                        </div>
-                        <div className="to_email">
                             <ValidatableInput
-                                className=""
                                 value={this.props.emailFields.to}
-                                textArea={false}
+                                label={"To"}
 
                                 validationErrors={validationErrors}
                                 pristine={pristine}
@@ -47,11 +44,15 @@ class EmailPane extends Component<Props, {}> {
                                 validationProperty={'to'}
 
                                 onChange={ (event: ChangeEvent) => this.props.updateEmailFields(event, this.props.emailFields, 'to') }/>
-                        </div>
-                        <div className="render_button" onClick={ () => this.props.sendEmail() }>
-                            SEND
-                        </div>
-                    </div>)}
+                            <Button variant="contained" color="primary" className="render_button" onClick={ () => this.props.sendEmail() }>
+                                Send
+                            </Button>
+                        </Grid>
+                    </Paper>
+                )
+
+                }
+
             </ValidationContext.Consumer>
         )
     }

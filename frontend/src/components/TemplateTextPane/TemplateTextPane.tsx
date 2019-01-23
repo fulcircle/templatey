@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import ValidatableInput from "../ValidatableInput/ValidatableInput";
 import {ValidationContext} from "../../App";
 import {ToRender} from "../../data/request/ToRender.class";
+import {Grid, Paper} from "@material-ui/core";
 
 interface Props {
     toRender: ToRender,
@@ -19,19 +20,26 @@ class TemplateTextPane extends Component<Props, {}> {
         return (
             <ValidationContext.Consumer>
                 {({ validationErrors, pristine })  => (
-                    <div className="text">
-                        <ValidatableInput
-                            className=""
-                            textArea={true}
-                            value={this.props.toRender.template_text}
+                    <Grid container style={{marginBottom: 20}}>
+                        <Paper style={{width: "100%"}}>
+                            <ValidatableInput
+                                value={this.props.toRender.template_text}
+                                label="Template Text"
+                                style={{width: "100%", border: "none"}}
+                                rows={10}
+                                variant={"outlined"}
 
-                            validationErrors={validationErrors}
-                            pristine={pristine}
-                            validationTarget={this.props.toRender}
-                            validationProperty={'template_text'}
+                                validationErrors={validationErrors}
+                                pristine={pristine}
+                                validationTarget={this.props.toRender}
+                                validationProperty={'template_text'}
 
-                            onChange={(event) => this.props.changeText(event)} />
-                    </div>)}
+                                multiline={true}
+
+                                onChange={(event) => this.props.changeText(event)} />
+                        </Paper>
+                    </Grid>
+                        )}
             </ValidationContext.Consumer>
         );
     }

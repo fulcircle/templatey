@@ -2,6 +2,7 @@ import React, {ChangeEvent, Component} from 'react';
 import {TemplateFields} from "../../data/request/TemplateFields.class";
 import {ValidationContext} from "../../App";
 import ValidatableInput from "../ValidatableInput/ValidatableInput";
+import {Button, Grid, Paper} from "@material-ui/core";
 
 interface Props {
     template_fields: Array<TemplateFields>,
@@ -22,11 +23,10 @@ class TemplateFieldsPane extends Component<Props, {}> {
             return (
                 <ValidationContext.Consumer key={idx}>
                     {({ validationErrors, pristine })  => (
-                        <div className="field">
+                        <Grid justify={"center"} container direction="row" wrap="nowrap" style={{padding: 25, marginBottom: 20}}>
                             <ValidatableInput
-                                textArea={false}
-                                className="field_input_name"
                                 value={field.name}
+                                label="Field Name"
 
                                 validationErrors={validationErrors}
                                 pristine={pristine}
@@ -36,9 +36,8 @@ class TemplateFieldsPane extends Component<Props, {}> {
                                 onChange={(event) => this.props.changeField(event, idx, 'name')}/>
 
                             <ValidatableInput
-                                textArea={false}
-                                className="field_input_value"
                                 value={field.value}
+                                label="Field Value"
 
                                 validationErrors={validationErrors}
                                 pristine={pristine}
@@ -47,24 +46,22 @@ class TemplateFieldsPane extends Component<Props, {}> {
 
                                 onChange={(event) => this.props.changeField(event, idx, 'value')}/>
 
-                            <div className="remove_field_button" onClick={event => this.props.removeField(idx)}>
-                                REMOVE
-                            </div>
-                        </div>)}
+                            <Button variant="contained" color="secondary" className="RemoveFieldButton" onClick={event => this.props.removeField(idx)}>
+                                Remove Field
+                            </Button>
+                        </Grid>)}
                 </ValidationContext.Consumer>)
         });
 
         return (
-            <div className="field_pane">
-
-                <div className="fields">
+            <Grid direction={"column"}>
+                <Paper style={{width: "100%"}}>
                     {fields}
-                </div>
-                <div className="add_field_button" onClick={event => this.props.addField()}>
-                    ADD
-                </div>
-
-            </div>
+                </Paper>
+                <Button style={{width: "100%", height: 50}} variant="contained" color="primary" className="AddFieldButton" onClick={event => this.props.addField()}>
+                    Add New Field
+                </Button>
+            </Grid>
         );
     }
 }

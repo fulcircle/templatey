@@ -1,5 +1,4 @@
 import React, {ChangeEvent, Component} from 'react';
-import './App.scss';
 import {Api, ResponseError} from "./api/Api.class";
 import {TemplateError, TemplateRenderResponse} from "./data/response/TemplateRenderResponse.interface";
 import DOMPurify from 'dompurify'
@@ -7,14 +6,13 @@ import TemplateFieldsPane from "./components/TemplateFieldsPane/TemplateFieldsPa
 import {ToRender} from "./data/request/ToRender.class";
 import TemplateTextPane from "./components/TemplateTextPane/TemplateTextPane";
 import {EmailFields} from "./data/request/EmailFields.class";
-import EmailPane from "./components/EmailPane/EmailPane";
 import {ValidationError, validateSync} from "class-validator";
 import {TemplateFields} from "./data/request/TemplateFields.class";
 import {Util} from "./util/Util";
 
 // Material-UI
 import 'typeface-roboto'
-import {Button} from '@material-ui/core/'
+import {Button, Grid} from '@material-ui/core/'
 
 class Validation {
 
@@ -173,39 +171,39 @@ class App extends Component<{}, State> {
 
     render() {
         return (
-            <div className="App">
+            <Grid container direction="row" wrap={"nowrap"} spacing={8} style={{padding: 25}}>
                 <ValidationContext.Provider value={this.state.validation}>
-                    <div className="editor_pane">
+                    <Grid container direction="column" style={{width: "50%", maxWidth: 800}}>
+                        {/*<EmailPane*/}
+                            {/*emailFields={this.state.emailFields}*/}
+                            {/*sendEmail={ () => this.sendEmail() }*/}
+                            {/*updateEmailFields={ (event: ChangeEvent<HTMLInputElement>,*/}
+                                                 {/*emailFields: EmailFields,*/}
+                                                 {/*property: string) => this.onEmailFieldsChange(event, emailFields, property)}*/}
+                        {/*/>*/}
+
+                        <TemplateTextPane
+                            toRender={this.state.toRender}
+                            changeText={(event: ChangeEvent<HTMLTextAreaElement>) => this.onTemplateTextChange(event)}
+                        />
                         <TemplateFieldsPane
                             template_fields={this.state.toRender.template_fields}
                             addField={() => this.addTemplateField()}
                             removeField={(idx: number) => this.removeTemplateField(idx)}
                             changeField={(event, idx: number, property: string) => this.onTemplateFieldChange(event, idx, property)}
                         />
-
-                        <TemplateTextPane
-                            toRender={this.state.toRender}
-                            changeText={(event: ChangeEvent<HTMLTextAreaElement>) => this.onTemplateTextChange(event)}
-                        />
-                    </div>
-
-                    <EmailPane
-                        emailFields={this.state.emailFields}
-                        sendEmail={ () => this.sendEmail() }
-                        updateEmailFields={ (event: ChangeEvent<HTMLInputElement>,
-                                             emailFields: EmailFields,
-                                             property: string) => this.onEmailFieldsChange(event, emailFields, property)}
-                    />
-
-                    <Button variant="contained" color="primary" className="render_button" onClick={ () => this.renderTemplate() }>
-                        Render
-                    </Button>
+                    </Grid>
 
                 </ValidationContext.Provider>
 
-                <div className="preview_pane" dangerouslySetInnerHTML={ {__html: DOMPurify.sanitize(this.state.rendered.template)} } />
+                <Grid container direction="column" alignItems={"center"} justify={"flex-start"} style={{width: "50%"}}>
+                    <div className="PreviewContent" dangerouslySetInnerHTML={ {__html: DOMPurify.sanitize(this.state.rendered.template)} } />
+                    <Button variant="contained" color="primary" className="render_button" onClick={ () => this.renderTemplate() }>
+                        Render
+                    </Button>
+                </Grid>
 
-            </div>
+            </Grid>
         );
     }
 }

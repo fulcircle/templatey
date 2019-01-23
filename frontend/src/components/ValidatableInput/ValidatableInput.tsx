@@ -1,17 +1,20 @@
-import React, {ChangeEvent, Component, ReactElement} from 'react';
+import React, {ChangeEvent, Component} from 'react';
 import {ValidationError} from "class-validator";
 import {Util} from "../../util/Util";
-import './ValidatableInput.scss'
+import {Grid, TextField} from "@material-ui/core";
 
 interface Props {
     validationTarget: any,
     validationProperty: string,
-    textArea: boolean,
     value: string,
     validationErrors: ValidationError[],
     pristine: boolean,
     onChange: (event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => any,
-    className: string
+    multiline?: boolean,
+    label?: string,
+    variant?: any,
+    style?: any;
+    rows?: any
 }
 
 class ValidatableInput extends Component<Props, {}> {
@@ -39,54 +42,58 @@ class ValidatableInput extends Component<Props, {}> {
         return this.localValidationErrors.length === 0 || this.props.pristine;
     }
 
-    get classNames()  {
-        let classes = [];
-        if (this.props.className) {
-            classes = [this.props.className,  this.errorClass]
-        } else {
-            classes = [this.errorClass]
-        }
-
-        return classes.join(" ");
-    }
-
     get errorClass() {
         return this.valid ? '' : 'error'
     }
 
     render() {
 
-        let errors: any = [];
+        let error_msg = "";
 
         if (!this.valid) {
-            errors = this.localValidationErrors.map((error, idx) => {
-                let error_msgs = Util.extractErrorMessages(error).map((error) => {
-                    return <div className={this.errorClass} key={idx}>{error}</div>
-                });
-                return error_msgs[0];
-            });
+            error_msg = Util.extractErrorMessages(this.localValidationErrors[0])[0];
         }
 
-        if (!this.props.textArea) {
-            return (
-                <div>
-                    <input className={"input " + this.classNames}
-                           value={this.props.value}
-                           onChange={(event: ChangeEvent<HTMLInputElement>) => this.props.onChange(event)}/>
-                    {errors}
-                </div>
-            )
+        let errorContainer: any;
+        if (this.props.multiline) {
+            errorContainer =
+                <Grid container justify={"flex-start"}
+                      style={{
+                          position: 'absolute',
+                          bottom: 10,
+                          left: 10,
+                          fontSize: 12,
+                          color: "red",
+                          height: 14}}>
+                    {error_msg}
+                </Grid>
+
         } else {
-            return (
-                <div>
-                <textarea className={"textarea " + this.classNames}
-                          value={this.props.value}
-                          onChange={(event: ChangeEvent<HTMLTextAreaElement>) => this.props.onChange(event)}/>
-                    {errors}
-                </div>
-            )
-
+            errorContainer =
+                <Grid container justify={"flex-start"}
+                  style={{
+                      fontSize: 12,
+                      marginTop: 10,
+                      color: "red",
+                      height: 14}}>
+                {error_msg}
+            </Grid>
         }
+
+        return (
+            <Grid direction={"column"} style={{position: "relative"}}>
+                <TextField className={this.errorClass}
+                           value={this.props.value}
+                           multiline={this.props.multiline}
+                           variant={this.props.variant}
+                           label={this.props.label}
+                           style={this.props.style}
+                           rows={this.props.rows}
+                           onChange={(event: ChangeEvent<HTMLTextAreaElement>) => this.props.onChange(event)}/>
+                {errorContainer}
+            </Grid>
+        )
+
 
     }
 }
