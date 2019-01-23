@@ -1,5 +1,5 @@
-import {Length, ValidateNested} from "class-validator";
-
+import {Length, ValidateNested, IsArray} from "class-validator";
+import {Type} from "class-transformer"
 import {TemplateFields} from "./TemplateFields.class";
 
 export class ToRender {
@@ -7,8 +7,10 @@ export class ToRender {
     @Length(1)
     template_text!: string;
 
-    @ValidateNested()
-    template_fields!: Array<TemplateFields>;
+    @IsArray()
+    @ValidateNested({each: true})
+    @Type(() => TemplateFields)
+    template_fields!: TemplateFields[];
 
     constructor(toRender: ToRender) {
         Object.assign(this, toRender);

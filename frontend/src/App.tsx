@@ -10,6 +10,7 @@ import {EmailFields} from "./data/request/EmailFields.class";
 import EmailPane from "./components/EmailPane/EmailPane";
 import {ValidationError, validateSync} from "class-validator";
 import {TemplateFields} from "./data/request/TemplateFields.class";
+import {Util} from "./util/Util";
 
 class Validation {
 
@@ -28,6 +29,7 @@ interface State {
     emailFields: EmailFields
 }
 
+// Create a Validation context that's accessible to all children components so they can validate themselves
 export const ValidationContext = React.createContext<Validation>({validationErrors: [], pristine: true});
 
 class App extends Component<{}, State> {
@@ -35,7 +37,7 @@ class App extends Component<{}, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-            toRender: new ToRender({ template_fields: [], template_text: '' }),
+            toRender: new ToRender({ template_fields: [new TemplateFields({name: "", value: ""})], template_text: '' }),
             emailFields: new EmailFields({from: "", to: ""}),
             validation: new Validation({validationErrors: [], pristine: true}),
             rendered: new TemplateRenderResponse({ template: "", template_name: "" })
@@ -105,10 +107,10 @@ class App extends Component<{}, State> {
 
     validate(pristine: boolean|null=null) {
 
-        // Validate on the backing state fields.
+        // Validate on the backing state fields, flatten them into one long array., instead of nested errors
         let errors = [
-            ...validateSync(this.state.emailFields),
-            ...validateSync(this.state.toRender),
+            ...Util.flattenErrors(validateSync(this.state.emailFields)),
+            ...Util.flattenErrors(validateSync(this.state.toRender))
         ];
 
         // When setState completes, it will cause ValidationContext.Provider to update its context

@@ -18,23 +18,25 @@ class ValidatableInput extends Component<Props, {}> {
         super(props);
     }
 
-    getValidationErrors() {
-        let errors = this.props.validationErrors.filter((validationError) => {
+    get localValidationErrors() {
+        return this.props.validationErrors.filter((validationError) => {
             return validationError.target === this.props.validationTarget
                 && validationError.property === this.props.validationProperty;
         });
-        if (errors.length > 0) {
-            return errors[0];
-        } else {
-            return null;
-        }
     }
 
     get valid(): boolean {
-        return this.getValidationErrors() === null;
+        console.log({
+            validationTarget: this.props.validationTarget,
+            validationProperty: this.props.validationProperty,
+            validationErrors: this.props.validationErrors,
+            valid: this.localValidationErrors.length === 0
+        });
+        return this.localValidationErrors.length === 0;
     }
 
     get classNames(): string {
+        console.log(this.valid);
         if (this.props.className) {
             return this.props.className + (this.valid ? '' : ' error')
         } else {

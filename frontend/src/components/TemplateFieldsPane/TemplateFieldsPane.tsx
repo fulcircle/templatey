@@ -20,9 +20,9 @@ class TemplateFieldsPane extends Component<Props, {}> {
 
         let fields = this.props.template_fields.map((field, idx) => {
             return (
-                <ValidationContext.Consumer>
+                <ValidationContext.Consumer key={idx}>
                     {({ validationErrors, pristine })  => (
-                        <div key={idx} className="field">
+                        <div className="field">
                             <ValidatableInput
                                 textArea={false}
                                 className="field_input_name"
