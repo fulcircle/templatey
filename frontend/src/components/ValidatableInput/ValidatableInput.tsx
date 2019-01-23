@@ -1,5 +1,4 @@
 import React, {ChangeEvent, Component} from 'react';
-import {ValidationContext} from "../../App";
 import {ValidationError} from "class-validator";
 
 interface Props {
@@ -8,16 +7,15 @@ interface Props {
     textArea: boolean,
     value: string,
     validationErrors: ValidationError[],
-    onChange: (event: ChangeEvent) => any
+    pristine: boolean,
+    onChange: (event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => any,
+    className: string
 }
 
 class ValidatableInput extends Component<Props, {}> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            validationError: null
-        }
     }
 
     getValidationErrors() {
@@ -32,24 +30,24 @@ class ValidatableInput extends Component<Props, {}> {
         }
     }
 
-    // get valid() {
-    //     return this.state.validationError === null;
-    // }
+    get valid(): boolean {
+        return this.getValidationErrors() === null;
+    }
+
+    get classNames(): string {
+        if (this.props.className) {
+            return this.props.className + (this.valid ? '' : ' error')
+        } else {
+            return this.valid ? '' : 'error'
+        }
+    }
 
     render() {
 
-        let errors = this.getValidationErrors();
-        let valid = errors === null;
-
-        if (!valid) {
-            console.log(errors)
-        }
-
-
         if (!this.props.textArea) {
-            return <input className={valid ? '' : 'error'} value={this.props.value} onChange={(event: ChangeEvent<HTMLInputElement>) => this.props.onChange(event)}/>
+            return <input className={this.classNames} value={this.props.value} onChange={(event: ChangeEvent<HTMLInputElement>) => this.props.onChange(event)}/>
         } else {
-            return <textarea className={valid ? '' : 'error' } value={this.props.value} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => this.props.onChange(event)}/>
+            return <textarea className={this.classNames} value={this.props.value} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => this.props.onChange(event)}/>
 
         }
 

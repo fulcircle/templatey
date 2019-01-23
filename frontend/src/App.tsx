@@ -3,58 +3,62 @@ import './App.scss';
 import {Api} from "./api/Api.class";
 import {TemplateRenderResponse} from "./data/response/TemplateRenderResponse.interface";
 import DOMPurify from 'dompurify'
-import FieldPane from "./components/FieldPane/FieldPane";
+import TemplateFieldsPane from "./components/TemplateFieldsPane/TemplateFieldsPane";
 import {ToRender} from "./data/request/ToRender.class";
-import TextPane from "./components/TextPane/TextPane";
+import TemplateTextPane from "./components/TemplateTextPane/TemplateTextPane";
 import {EmailFields} from "./data/request/EmailFields.class";
 import EmailPane from "./components/EmailPane/EmailPane";
 import {ValidationError, validateSync} from "class-validator";
 import {TemplateFields} from "./data/request/TemplateFields.class";
 
+class Validation {
+
+    pristine: boolean = true;
+    validationErrors: ValidationError[] = [];
+
+    constructor(validation: Validation) {
+        Object.assign(this, validation);
+    }
+}
+
 interface State {
-    validationErrors: ValidationError[],
+    validation: Validation,
     rendered: TemplateRenderResponse,
     toRender: ToRender
     emailFields: EmailFields
 }
 
-interface ValidationContextInterface {
-    validationErrors: ValidationError[]
-}
-
-export const ValidationContext = React.createContext<ValidationContextInterface>({validationErrors: []});
+export const ValidationContext = React.createContext<Validation>({validationErrors: [], pristine: true});
 
 class App extends Component<{}, State> {
 
     constructor(props: any) {
         super(props);
         this.state = {
-            validationErrors: [],
-            rendered: { template: "", template_name: "" },
             toRender: new ToRender({ template_fields: [], template_text: '' }),
-            emailFields: new EmailFields({from: "", to: ""})
+            emailFields: new EmailFields({from: "", to: ""}),
+            validation: new Validation({validationErrors: [], pristine: true}),
+            rendered: new TemplateRenderResponse({ template: "", template_name: "" })
         }
     }
 
-    addField() {
+    componentDidMount(): void {
+        this.renderTemplate();
+    }
+
+    addTemplateField() {
         let toRender = new ToRender(this.state.toRender);
         toRender.template_fields.push(new TemplateFields({name: "", value: ""}));
-        this.setState({toRender: toRender}, () => this.validate());
+        this.setState({toRender: toRender});
     }
 
-    removeField(idx: number) {
+    removeTemplateField(idx: number) {
         let toRender = new ToRender(this.state.toRender);
         toRender.template_fields.splice(idx, 1);
-        this.setState({toRender: toRender}, () => this.validate());
+        this.setState({toRender: toRender});
     }
 
-    onTextChange(event: ChangeEvent<HTMLTextAreaElement>) {
-        let toRender = new ToRender(this.state.toRender);
-        toRender.template_text = event.target.value;
-        this.setState({toRender: toRender}, () => this.validate())
-    }
-
-    onFieldChange(event: ChangeEvent<HTMLInputElement>, idx: number, property: string) {
+    onTemplateFieldChange(event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>, idx: number, property: string) {
         let toRender = new ToRender(this.state.toRender);
 
         if (property === 'value')  {
@@ -66,21 +70,22 @@ class App extends Component<{}, State> {
         this.setState({toRender: toRender}, () => this.validate());
     }
 
-    componentDidMount(): void {
-        this.renderTemplate();
+    onTemplateTextChange(event: ChangeEvent<HTMLTextAreaElement>) {
+        let toRender = new ToRender(this.state.toRender);
+        toRender.template_text = event.target.value;
+        this.setState({toRender: toRender}, () => this.validate())
     }
 
+
     async renderTemplate() {
-        let valid = await this.validate();
+        let valid = this.validate(false);
         if (valid) {
             let rendered = await Api.render(this.state.toRender);
             this.setState({rendered: rendered})
-        } else {
-            // Show errors
         }
     }
 
-    updateEmailFields(event: ChangeEvent<HTMLInputElement>, emailFields: EmailFields, property: string) {
+    onEmailFieldsChange(event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>, emailFields: EmailFields, property: string) {
         let updatedEmailFields = new EmailFields(emailFields);
         if (property === 'from') {
             updatedEmailFields.from = event.target.value;
@@ -92,21 +97,29 @@ class App extends Component<{}, State> {
     }
 
     async sendEmail() {
-        let valid = this.validate();
+        let valid = this.validate(false);
         if (valid) {
             await Api.send_email(this.state.toRender, this.state.emailFields);
-        } else {
-            // Show errors
         }
     }
 
-    validate() {
+    validate(pristine: boolean|null=null) {
+
+        // Validate on the backing state fields.
         let errors = [
             ...validateSync(this.state.emailFields),
             ...validateSync(this.state.toRender),
         ];
 
-        this.setState({validationErrors: errors});
+        // When setState completes, it will cause ValidationContext.Provider to update its context
+        // and trigger all ValidatableInputs to check if they have any errors
+        this.setState({
+            validation:
+                {
+                    validationErrors: errors,
+                    pristine: pristine === null ? this.state.validation.pristine : pristine
+                }
+        });
 
         return errors.length === 0;
     }
@@ -114,18 +127,18 @@ class App extends Component<{}, State> {
     render() {
         return (
             <div className="App">
-                <ValidationContext.Provider value={{validationErrors: this.state.validationErrors}}>
+                <ValidationContext.Provider value={this.state.validation}>
                     <div className="editor_pane">
-                        <FieldPane
+                        <TemplateFieldsPane
                             template_fields={this.state.toRender.template_fields}
-                            addField={() => this.addField()}
-                            removeField={(idx: number) => this.removeField(idx)}
-                            changeField={(event: ChangeEvent<HTMLInputElement>, idx: number, property: string) => this.onFieldChange(event, idx, property)}
+                            addField={() => this.addTemplateField()}
+                            removeField={(idx: number) => this.removeTemplateField(idx)}
+                            changeField={(event, idx: number, property: string) => this.onTemplateFieldChange(event, idx, property)}
                         />
 
-                        <TextPane
-                            template_text={this.state.toRender.template_text}
-                            changeText={(event: ChangeEvent<HTMLTextAreaElement>) => this.onTextChange(event)}
+                        <TemplateTextPane
+                            toRender={this.state.toRender}
+                            changeText={(event: ChangeEvent<HTMLTextAreaElement>) => this.onTemplateTextChange(event)}
                         />
                     </div>
 
@@ -134,7 +147,7 @@ class App extends Component<{}, State> {
                         sendEmail={ () => this.sendEmail() }
                         updateEmailFields={ (event: ChangeEvent<HTMLInputElement>,
                                              emailFields: EmailFields,
-                                             property: string) => this.updateEmailFields(event, emailFields, property)}
+                                             property: string) => this.onEmailFieldsChange(event, emailFields, property)}
                     />
 
                     <div className="render_button" onClick={ () => this.renderTemplate() }>

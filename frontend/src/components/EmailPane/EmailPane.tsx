@@ -20,24 +20,32 @@ class EmailPane extends Component<Props, {}> {
 
         return (
             <ValidationContext.Consumer>
-                {({ validationErrors })  => (
+                {({ validationErrors, pristine })  => (
                     <div className="email">
                         <div className="from_email">
                             <ValidatableInput
-                                validationErrors={validationErrors}
+                                className=""
                                 value={this.props.emailFields.from}
                                 textArea={false}
+
+                                validationErrors={validationErrors}
+                                pristine={pristine}
                                 validationTarget={this.props.emailFields}
                                 validationProperty={'from'}
+
                                 onChange={ (event: ChangeEvent) => this.props.updateEmailFields(event, this.props.emailFields, 'from') }/>
                         </div>
                         <div className="to_email">
                             <ValidatableInput
-                                validationErrors={validationErrors}
+                                className=""
                                 value={this.props.emailFields.to}
                                 textArea={false}
+
+                                validationErrors={validationErrors}
+                                pristine={pristine}
                                 validationTarget={this.props.emailFields}
                                 validationProperty={'to'}
+
                                 onChange={ (event: ChangeEvent) => this.props.updateEmailFields(event, this.props.emailFields, 'to') }/>
                         </div>
                         <div className="render_button" onClick={ () => this.props.sendEmail() }>
