@@ -28,13 +28,14 @@ class ValidatableInput extends Component<Props, {}> {
     }
 
     get valid(): boolean {
-        // console.log({
-        //     validationTarget: this.props.validationTarget,
-        //     validationProperty: this.props.validationProperty,
-        //     validationErrors: this.props.validationErrors,
-        //     valid: this.localValidationErrors.length === 0,
-        //     pristine: this.props.pristine
-        // });
+        console.log({
+            validationTarget: this.props.validationTarget,
+            validationProperty: this.props.validationProperty,
+            validationErrors: this.props.validationErrors,
+            valid: this.localValidationErrors.length === 0,
+            localValidationErrors: this.localValidationErrors,
+            pristine: this.props.pristine
+        });
         return this.localValidationErrors.length === 0 || this.props.pristine;
     }
 
@@ -59,9 +60,10 @@ class ValidatableInput extends Component<Props, {}> {
 
         if (!this.valid) {
             errors = this.localValidationErrors.map((error, idx) => {
-                return Util.extractErrorMessages(error).map((error) => {
+                let error_msgs = Util.extractErrorMessages(error).map((error) => {
                     return <div className={this.errorClass} key={idx}>{error}</div>
                 });
+                return error_msgs[0];
             });
         }
 
