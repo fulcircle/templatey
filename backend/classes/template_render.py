@@ -20,7 +20,7 @@ class TemplateRender:
             template_vars[field['name']] = field['value']
 
         # Convert Spaces and Newlines into HTML Equivalent
-        template_text = self.template_text.replace('\n', '<br/>').replace(' ', '&nbsp;')
+        template_text = self.template_text.replace('\n', '<br/>')
         template_string = self.text_env.from_string(template_text).render(**template_vars)
         return render_template(f'{self.template_name}.html', text=template_string)
 
