@@ -30,7 +30,7 @@ interface State {
 }
 
 // Create a Validation context that's accessible to all children components so they can validate themselves
-export const ValidationContext = React.createContext<Validation>({validationErrors: [], pristine: true});
+export const ValidationContext = React.createContext<Validation>(new Validation({validationErrors: [], pristine: true}));
 
 class App extends Component<{}, State> {
 
@@ -42,10 +42,6 @@ class App extends Component<{}, State> {
             validation: new Validation({validationErrors: [], pristine: true}),
             rendered: new TemplateRenderResponse({ template: "", template_name: "" })
         }
-    }
-
-    componentDidMount(): void {
-        this.renderTemplate();
     }
 
     addTemplateField() {
@@ -80,11 +76,16 @@ class App extends Component<{}, State> {
 
 
     async renderTemplate() {
-        let valid = this.validate(false);
-        if (valid) {
-            let rendered = await Api.render(this.state.toRender);
-            this.setState({rendered: rendered})
-        }
+        let validation = new Validation(this.state.validation);
+        validation.pristine = false;
+
+        this.setState({validation: validation}, async () => {
+            let valid = this.validate();
+            if (valid) {
+                let rendered = await Api.render(this.state.toRender);
+                this.setState({rendered: rendered})
+            }
+        });
     }
 
     onEmailFieldsChange(event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>, emailFields: EmailFields, property: string) {
@@ -99,13 +100,18 @@ class App extends Component<{}, State> {
     }
 
     async sendEmail() {
-        let valid = this.validate(false);
-        if (valid) {
-            await Api.send_email(this.state.toRender, this.state.emailFields);
-        }
+        let validation = new Validation(this.state.validation);
+        validation.pristine = false;
+
+        this.setState({validation: validation}, async () => {
+            let valid = this.validate();
+            if (valid) {
+                await Api.send_email(this.state.toRender, this.state.emailFields);
+            }
+        })
     }
 
-    validate(pristine: boolean|null=null) {
+    validate() {
 
         // Validate on the backing state fields, flatten them into one long array., instead of nested errors
         let errors = [
@@ -113,15 +119,12 @@ class App extends Component<{}, State> {
             ...Util.flattenErrors(validateSync(this.state.toRender))
         ];
 
+        let validation = new Validation(this.state.validation);
+        validation.validationErrors = errors;
+
         // When setState completes, it will cause ValidationContext.Provider to update its context
         // and trigger all ValidatableInputs to check if they have any errors
-        this.setState({
-            validation:
-                {
-                    validationErrors: errors,
-                    pristine: pristine === null ? this.state.validation.pristine : pristine
-                }
-        });
+        this.setState({ validation: validation });
 
         return errors.length === 0;
     }

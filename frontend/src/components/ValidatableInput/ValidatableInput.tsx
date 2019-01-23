@@ -26,17 +26,17 @@ class ValidatableInput extends Component<Props, {}> {
     }
 
     get valid(): boolean {
-        console.log({
-            validationTarget: this.props.validationTarget,
-            validationProperty: this.props.validationProperty,
-            validationErrors: this.props.validationErrors,
-            valid: this.localValidationErrors.length === 0
-        });
-        return this.localValidationErrors.length === 0;
+        // console.log({
+        //     validationTarget: this.props.validationTarget,
+        //     validationProperty: this.props.validationProperty,
+        //     validationErrors: this.props.validationErrors,
+        //     valid: this.localValidationErrors.length === 0,
+        //     pristine: this.props.pristine
+        // });
+        return this.localValidationErrors.length === 0 || this.props.pristine;
     }
 
     get classNames(): string {
-        console.log(this.valid);
         if (this.props.className) {
             return this.props.className + (this.valid ? '' : ' error')
         } else {
