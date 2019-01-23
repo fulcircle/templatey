@@ -33,7 +33,7 @@ Frontend is built with React using Typescript and node-sass
 
 #### Templating
 * You can use text as well as HTML in the template text and it will render it properly.
-* Variables in the template text are escaped with '%%' so in order to interpolate the variable `test`, you
+* Variables in the template text are escaped with `%%` so in order to interpolate the variable `test`, you
 would do `%%test%%`
 
 
