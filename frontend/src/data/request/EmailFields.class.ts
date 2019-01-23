@@ -4,13 +4,13 @@ export class EmailFields {
 
     @IsEmail({}, {
         groups: ['email'],
-        message: 'You must specify a "from" email'
+        message: 'You must specify a valid "from" email'
     })
     from!: string;
 
     @IsEmail({}, {
         groups: ['email'],
-        message: 'You must specify a "to" email'
+        message: 'You must specify a valid "to" email'
     })
     to!: string;
 

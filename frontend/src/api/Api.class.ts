@@ -3,6 +3,14 @@ import {ToRender} from "../data/request/ToRender.class";
 import {EmailResponse} from "../data/response/EmailResponse.interface";
 import {EmailFields} from "../data/request/EmailFields.class";
 
+export class ResponseError {
+    response: Response = new Response();
+
+    constructor(responseError: ResponseError) {
+        Object.assign(this, responseError);
+    }
+}
+
 export class Api {
 
     static async render(toRender: ToRender): Promise<TemplateRenderResponse> {
@@ -39,7 +47,7 @@ export class Api {
         let response = await fetch(route, postData);
 
         if (!response.ok) {
-            throw new Error(response.statusText);
+            throw new ResponseError({response: response});
         }
 
         return await response.json();

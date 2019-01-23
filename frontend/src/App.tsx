@@ -1,6 +1,6 @@
 import React, {ChangeEvent, Component} from 'react';
 import './App.scss';
-import {Api} from "./api/Api.class";
+import {Api, ResponseError} from "./api/Api.class";
 import {TemplateRenderResponse} from "./data/response/TemplateRenderResponse.interface";
 import DOMPurify from 'dompurify'
 import TemplateFieldsPane from "./components/TemplateFieldsPane/TemplateFieldsPane";
@@ -82,8 +82,21 @@ class App extends Component<{}, State> {
         this.setState({validation: validation}, async () => {
             let valid = this.validate(['render']);
             if (valid) {
-                let rendered = await Api.render(this.state.toRender);
-                this.setState({rendered: rendered})
+
+                try {
+
+                    let rendered = await Api.render(this.state.toRender);
+                    this.setState({rendered: rendered})
+
+                } catch (e) {
+
+                    let alert_text = "Sorry! There was an error rendering the template.  Our developers have been notified.";
+                    if (e instanceof ResponseError) {
+                        alert_text += "Status code: " + e.response.status;
+                    }
+
+                    alert(alert_text)
+                }
             }
         });
     }
@@ -106,7 +119,20 @@ class App extends Component<{}, State> {
         this.setState({validation: validation}, async () => {
             let valid = this.validate(['email']);
             if (valid) {
-                await Api.send_email(this.state.toRender, this.state.emailFields);
+                try {
+
+                    await Api.send_email(this.state.toRender, this.state.emailFields);
+                    alert("Email sent successfully!");
+
+                } catch (e) {
+
+                    let alert_text = "Sorry! There was an error sending the e-mail.  Our engineers have been notified.";
+                    if (e instanceof ResponseError) {
+                        alert_text += "Status code: " + e.response.status;
+                    }
+
+                    alert(alert_text)
+                }
             }
         })
     }

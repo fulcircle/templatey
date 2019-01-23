@@ -1,4 +1,5 @@
 import {ValidationError} from "class-validator";
+import {ResponseError} from "../api/Api.class";
 
 export class Util {
 
@@ -16,6 +17,9 @@ export class Util {
         }
 
         return error_msgs;
+    }
+
+    static handleResponseError(responseError: ResponseError) {
     }
 
     private static _flattenErrors(arr: Array<ValidationError>, state: ValidationError[]) {

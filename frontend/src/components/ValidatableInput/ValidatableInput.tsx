@@ -28,14 +28,14 @@ class ValidatableInput extends Component<Props, {}> {
     }
 
     get valid(): boolean {
-        console.log({
-            validationTarget: this.props.validationTarget,
-            validationProperty: this.props.validationProperty,
-            validationErrors: this.props.validationErrors,
-            valid: this.localValidationErrors.length === 0,
-            localValidationErrors: this.localValidationErrors,
-            pristine: this.props.pristine
-        });
+        // console.log({
+        //     validationTarget: this.props.validationTarget,
+        //     validationProperty: this.props.validationProperty,
+        //     validationErrors: this.props.validationErrors,
+        //     valid: this.localValidationErrors.length === 0,
+        //     localValidationErrors: this.localValidationErrors,
+        //     pristine: this.props.pristine
+        // });
         return this.localValidationErrors.length === 0 || this.props.pristine;
     }
 
