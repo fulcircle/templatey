@@ -76,29 +76,29 @@ class App extends Component<{}, State> {
 
 
     async renderTemplate() {
+
+        let valid = this.validate(['render']);
+        if (valid) {
+
+            try {
+
+                let rendered = await Api.render(this.state.toRender);
+                this.setState({rendered: rendered});
+
+            } catch (e) {
+
+                let alert_text = "Sorry! There was an error generating the template.  Our developers have been notified.";
+                if (e instanceof ResponseError) {
+                    alert_text += "Status code: " + e.response.status;
+                }
+
+                alert(alert_text)
+            }
+        }
+
         let validation = new Validation(this.state.validation);
         validation.pristine = false;
-
-        this.setState({validation: validation}, async () => {
-            let valid = this.validate(['render']);
-            if (valid) {
-
-                try {
-
-                    let rendered = await Api.render(this.state.toRender);
-                    this.setState({rendered: rendered})
-
-                } catch (e) {
-
-                    let alert_text = "Sorry! There was an error rendering the template.  Our developers have been notified.";
-                    if (e instanceof ResponseError) {
-                        alert_text += "Status code: " + e.response.status;
-                    }
-
-                    alert(alert_text)
-                }
-            }
-        });
+        this.setState({validation: validation})
     }
 
     onEmailFieldsChange(event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>, emailFields: EmailFields, property: string) {
@@ -113,28 +113,31 @@ class App extends Component<{}, State> {
     }
 
     async sendEmail() {
+
+        let valid = this.validate(['email']);
+        if (valid) {
+            try {
+                // First render to check for any errors
+                await this.renderTemplate();
+                await Api.send_email(this.state.toRender, this.state.emailFields);
+
+                alert("Email sent successfully!");
+
+
+            } catch (e) {
+
+                let alert_text = "Sorry! There was an error sending the e-mail.  Our engineers have been notified.";
+                if (e instanceof ResponseError) {
+                    alert_text += "Status code: " + e.response.status;
+                }
+
+                alert(alert_text)
+            }
+        }
+
         let validation = new Validation(this.state.validation);
         validation.pristine = false;
-
-        this.setState({validation: validation}, async () => {
-            let valid = this.validate(['email']);
-            if (valid) {
-                try {
-
-                    await Api.send_email(this.state.toRender, this.state.emailFields);
-                    alert("Email sent successfully!");
-
-                } catch (e) {
-
-                    let alert_text = "Sorry! There was an error sending the e-mail.  Our engineers have been notified.";
-                    if (e instanceof ResponseError) {
-                        alert_text += "Status code: " + e.response.status;
-                    }
-
-                    alert(alert_text)
-                }
-            }
-        })
+        this.setState({validation: validation})
     }
 
     validate(groups: Array<string>=[]) {
