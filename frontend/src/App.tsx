@@ -1,7 +1,7 @@
 import React, {ChangeEvent, Component} from 'react';
 import './App.scss';
 import {Api, ResponseError} from "./api/Api.class";
-import {TemplateRenderResponse} from "./data/response/TemplateRenderResponse.interface";
+import {TemplateError, TemplateRenderResponse} from "./data/response/TemplateRenderResponse.interface";
 import DOMPurify from 'dompurify'
 import TemplateFieldsPane from "./components/TemplateFieldsPane/TemplateFieldsPane";
 import {ToRender} from "./data/request/ToRender.class";
@@ -40,7 +40,10 @@ class App extends Component<{}, State> {
             toRender: new ToRender({ template_fields: [new TemplateFields({name: "", value: ""})], template_text: '' }),
             emailFields: new EmailFields({from: "", to: ""}),
             validation: new Validation({validationErrors: [], pristine: true}),
-            rendered: new TemplateRenderResponse({ template: "", template_name: "" })
+            rendered: new TemplateRenderResponse({
+                template: "",
+                template_name: "",
+                template_error: new TemplateError({error_msg: '', has_error: false}) })
         }
     }
 
@@ -83,6 +86,11 @@ class App extends Component<{}, State> {
             try {
 
                 let rendered = await Api.render(this.state.toRender);
+
+                if (rendered.template_error.has_error) {
+                    alert("There was an error when rendering your template: " + rendered.template_error.error_msg + " Please check your template text is properly formulated.")
+                }
+
                 this.setState({rendered: rendered});
 
             } catch (e) {
