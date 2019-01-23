@@ -23,7 +23,7 @@ class TemplateFieldsPane extends Component<Props, {}> {
             return (
                 <ValidationContext.Consumer key={idx}>
                     {({ validationErrors, pristine })  => (
-                        <Grid justify={"center"} container direction="row" wrap="nowrap" style={{padding: 25, marginBottom: 20}}>
+                        <Grid container justify={"center"} direction="row" wrap="nowrap" style={{padding: 25, marginBottom: 20}}>
                             <ValidatableInput
                                 value={field.name}
                                 label="Field Name"
@@ -54,8 +54,8 @@ class TemplateFieldsPane extends Component<Props, {}> {
         });
 
         return (
-            <Grid direction={"column"}>
-                <Paper style={{width: "100%"}}>
+            <Grid container direction={"column"}>
+                <Paper style={{width: "100%", marginBottom: 20}}>
                     {fields}
                 </Paper>
                 <Button style={{width: "100%", height: 50}} variant="contained" color="primary" className="AddFieldButton" onClick={event => this.props.addField()}>

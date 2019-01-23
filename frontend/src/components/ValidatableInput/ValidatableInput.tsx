@@ -81,7 +81,7 @@ class ValidatableInput extends Component<Props, {}> {
         }
 
         return (
-            <Grid direction={"column"} style={{position: "relative"}}>
+            <Grid container direction={"column"} style={{position: "relative"}}>
                 <TextField className={this.errorClass}
                            value={this.props.value}
                            multiline={this.props.multiline}

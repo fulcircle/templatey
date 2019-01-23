@@ -22,8 +22,8 @@ class EmailPane extends Component<Props, {}> {
         return (
             <ValidationContext.Consumer>
                 {({ validationErrors, pristine })  => (
-                    <Paper>
-                        <Grid container direction="row" wrap="nowrap">
+                    <Grid container direction="column">
+                        <Grid container direction="row" wrap="nowrap" style={{marginBottom: 15}}>
                             <ValidatableInput
                                 value={this.props.emailFields.from}
                                 label="From"
@@ -44,11 +44,11 @@ class EmailPane extends Component<Props, {}> {
                                 validationProperty={'to'}
 
                                 onChange={ (event: ChangeEvent) => this.props.updateEmailFields(event, this.props.emailFields, 'to') }/>
-                            <Button variant="contained" color="primary" className="render_button" onClick={ () => this.props.sendEmail() }>
-                                Send
-                            </Button>
                         </Grid>
-                    </Paper>
+                        <Button variant="contained" color="primary" className="render_button" onClick={ () => this.props.sendEmail() }>
+                            Send
+                        </Button>
+                    </Grid>
                 )
 
                 }
