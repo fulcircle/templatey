@@ -65,13 +65,13 @@ class App extends Component<{}, State> {
             toRender.template_fields[idx].name = event.target.value;
         }
 
-        this.setState({toRender: toRender}, () => this.validate());
+        this.setState({toRender: toRender}, () => this.validate(['render']));
     }
 
     onTemplateTextChange(event: ChangeEvent<HTMLTextAreaElement>) {
         let toRender = new ToRender(this.state.toRender);
         toRender.template_text = event.target.value;
-        this.setState({toRender: toRender}, () => this.validate())
+        this.setState({toRender: toRender}, () => this.validate(['render']))
     }
 
 
@@ -80,7 +80,7 @@ class App extends Component<{}, State> {
         validation.pristine = false;
 
         this.setState({validation: validation}, async () => {
-            let valid = this.validate();
+            let valid = this.validate(['render']);
             if (valid) {
                 let rendered = await Api.render(this.state.toRender);
                 this.setState({rendered: rendered})
@@ -96,7 +96,7 @@ class App extends Component<{}, State> {
             updatedEmailFields.to = event.target.value;
         }
 
-        this.setState({emailFields: updatedEmailFields}, () => this.validate() )
+        this.setState({emailFields: updatedEmailFields}, () => this.validate(['email']) )
     }
 
     async sendEmail() {
@@ -104,19 +104,19 @@ class App extends Component<{}, State> {
         validation.pristine = false;
 
         this.setState({validation: validation}, async () => {
-            let valid = this.validate();
+            let valid = this.validate(['email']);
             if (valid) {
                 await Api.send_email(this.state.toRender, this.state.emailFields);
             }
         })
     }
 
-    validate() {
+    validate(groups: Array<string>=[]) {
 
         // Validate on the backing state fields, flatten them into one long array., instead of nested errors
         let errors = [
-            ...Util.flattenErrors(validateSync(this.state.emailFields)),
-            ...Util.flattenErrors(validateSync(this.state.toRender))
+            ...Util.flattenErrors(validateSync(this.state.emailFields, {groups: groups})),
+            ...Util.flattenErrors(validateSync(this.state.toRender, {groups: groups}))
         ];
 
         let validation = new Validation(this.state.validation);

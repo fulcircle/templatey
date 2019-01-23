@@ -4,7 +4,7 @@ import {TemplateFields} from "./TemplateFields.class";
 
 export class ToRender {
 
-    @Length(1)
+    @Length(1, undefined, {groups: ['email', 'render']})
     template_text!: string;
 
     @IsArray()

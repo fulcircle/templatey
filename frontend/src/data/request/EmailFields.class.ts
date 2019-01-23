@@ -2,10 +2,10 @@ import {IsEmail} from "class-validator";
 
 export class EmailFields {
 
-    @IsEmail()
+    @IsEmail({}, {groups: ['email']})
     from!: string;
 
-    @IsEmail()
+    @IsEmail({}, {groups: ['email']})
     to!: string;
 
     constructor(fields: EmailFields) {
