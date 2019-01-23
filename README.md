@@ -10,7 +10,7 @@ Backend is built with Python and Flask.  You will need python 3.7.2.
 
 1. CD into the `backend` directory
 1. Create a virtualenv with python 3.7.2 if needed
-1. Run `pip install`
+1. Run `pip install -r requirements.txt`
 1. Fill in your SendGrid API key in `settings/api_key_defaults.py`
 1. Set bash environmental variables:
     > `$ export FLASK_APP=app.py`<br>
