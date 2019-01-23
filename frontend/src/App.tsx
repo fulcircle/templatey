@@ -12,6 +12,10 @@ import {ValidationError, validateSync} from "class-validator";
 import {TemplateFields} from "./data/request/TemplateFields.class";
 import {Util} from "./util/Util";
 
+// Material-UI
+import 'typeface-roboto'
+import {Button} from '@material-ui/core/'
+
 class Validation {
 
     pristine: boolean = true;
@@ -80,33 +84,34 @@ class App extends Component<{}, State> {
 
     async renderTemplate() {
 
-        let valid = this.validate(['render']);
-        if (valid) {
-
-            try {
-
-                let rendered = await Api.render(this.state.toRender);
-
-                if (rendered.template_error.has_error) {
-                    alert("There was an error when rendering your template: " + rendered.template_error.error_msg + " Please check your template text is properly formulated.")
-                }
-
-                this.setState({rendered: rendered});
-
-            } catch (e) {
-
-                let alert_text = "Sorry! There was an error generating the template.  Our developers have been notified.";
-                if (e instanceof ResponseError) {
-                    alert_text += "Status code: " + e.response.status;
-                }
-
-                alert(alert_text)
-            }
-        }
-
         let validation = new Validation(this.state.validation);
         validation.pristine = false;
-        this.setState({validation: validation})
+        this.setState({validation: validation}, async () => {
+            let valid = this.validate(['render']);
+            if (valid) {
+
+                try {
+
+                    let rendered = await Api.render(this.state.toRender);
+
+                    if (rendered.template_error.has_error) {
+                        alert("There was an error when rendering your template: " + rendered.template_error.error_msg + " Please check your template text is properly formulated.")
+                    } else {
+                        this.setState({rendered: rendered});
+                    }
+
+                } catch (e) {
+
+                    let alert_text = "Sorry! There was an error generating the template.  Our developers have been notified.";
+                    if (e instanceof ResponseError) {
+                        alert_text += "Status code: " + e.response.status;
+                    }
+
+                    alert(alert_text)
+                }
+            }
+        })
+
     }
 
     onEmailFieldsChange(event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>, emailFields: EmailFields, property: string) {
@@ -122,30 +127,30 @@ class App extends Component<{}, State> {
 
     async sendEmail() {
 
-        let valid = this.validate(['email']);
-        if (valid) {
-            try {
-                // First render to check for any errors
-                await this.renderTemplate();
-                await Api.send_email(this.state.toRender, this.state.emailFields);
-
-                alert("Email sent successfully!");
-
-
-            } catch (e) {
-
-                let alert_text = "Sorry! There was an error sending the e-mail.  Our engineers have been notified.";
-                if (e instanceof ResponseError) {
-                    alert_text += "Status code: " + e.response.status;
-                }
-
-                alert(alert_text)
-            }
-        }
-
         let validation = new Validation(this.state.validation);
         validation.pristine = false;
-        this.setState({validation: validation})
+
+        this.setState({validation: validation}, async () => {
+            let valid = this.validate(['email']);
+            if (valid) {
+                try {
+                    // First render to check for any errors
+                    await this.renderTemplate();
+                    await Api.send_email(this.state.toRender, this.state.emailFields);
+
+                    alert("Email sent successfully!");
+
+
+                } catch (e) {
+
+                    let alert_text = "Sorry! There was an error sending the e-mail.  Our engineers have been notified.";
+                    if (e instanceof ResponseError) {
+                        alert_text += "Status code: " + e.response.status;
+                    }
+
+                    alert(alert_text)
+                }
+            }})
     }
 
     validate(groups: Array<string>=[]) {
@@ -192,9 +197,9 @@ class App extends Component<{}, State> {
                                              property: string) => this.onEmailFieldsChange(event, emailFields, property)}
                     />
 
-                    <div className="render_button" onClick={ () => this.renderTemplate() }>
-                        RENDER
-                    </div>
+                    <Button variant="contained" color="primary" className="render_button" onClick={ () => this.renderTemplate() }>
+                        Render
+                    </Button>
 
                 </ValidationContext.Provider>
 
