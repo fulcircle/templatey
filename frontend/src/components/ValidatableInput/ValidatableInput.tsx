@@ -1,4 +1,4 @@
-import React, {ChangeEvent, Component} from 'react';
+import React, {ChangeEvent, Component, ReactElement} from 'react';
 import {ValidationError} from "class-validator";
 import {Util} from "../../util/Util";
 import './ValidatableInput.scss'
@@ -55,11 +55,15 @@ class ValidatableInput extends Component<Props, {}> {
 
     render() {
 
-        let errors = this.localValidationErrors.map((error, idx) => {
+        let errors: any = [];
+
+        if (!this.valid) {
+            errors = this.localValidationErrors.map((error, idx) => {
                 return Util.extractErrorMessages(error).map((error) => {
                     return <div className={this.errorClass} key={idx}>{error}</div>
                 });
-        });
+            });
+        }
 
         if (!this.props.textArea) {
             return (

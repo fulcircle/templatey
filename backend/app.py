@@ -7,7 +7,7 @@ app = Flask(__name__)
 def get_renderer():
     json = request.json
     template_text = json['to_render']['template_text']
-    template_data = json['to_render']['fields']
+    template_data = json['to_render']['template_fields']
 
     _template_renderer = TemplateRender(template_text, template_data)
     return _template_renderer

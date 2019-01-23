@@ -1,11 +1,14 @@
-import {Length} from "class-validator";
+import {Length, Matches, MaxLength, MinLength} from "class-validator";
 
 export class TemplateFields {
 
-    @Length(1, 256, {groups: ['email', 'render']})
+    @MinLength(1, {groups: ['email', 'render']})
+    @MaxLength(256, {groups: ['email', 'render']})
+    @Matches(/[A-Za-z_]+.*/)
     name!: string;
 
-    @Length(1, 256, {groups: ['email', 'render']})
+    @MinLength(1, {groups: ['email', 'render']})
+    @MaxLength(256, {groups: ['email', 'render']})
     value!: string;
 
     constructor(fields: TemplateFields) {
