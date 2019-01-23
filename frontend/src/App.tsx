@@ -64,7 +64,7 @@ class App extends Component<{}, State> {
     addTemplateField() {
         let toRender = new ToRender(this.state.toRender);
         toRender.template_fields.push(new TemplateFields({name: "", value: ""}));
-        this.setState({toRender: toRender}, () => this.validate(['render']));
+        this.setState({toRender: toRender});
     }
 
     removeTemplateField(idx: number) {
