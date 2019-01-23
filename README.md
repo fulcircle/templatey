@@ -31,6 +31,12 @@ Frontend is built with React using Typescript and node-sass
 
 ### Some Notes
 
+#### Templating
+* You can use text as well as HTML in the template text and it will render it properly.
+* Variables in the template text are escaped with '%%' so in order to interpolate the variable `test`, you
+would do `%%test%%`
+
+
 #### Application state
 * I only store state on the main `App` component and did not use React's `Context` or a library like redux for the application state.  This is mostly because there was really only one level of nesting for the App.
 It was more convenient and quicker to store all the state in the main `App` component in this case.  
@@ -47,5 +53,6 @@ directly onto TypeScript class fields.  Once annotated, you can merely call the 
 to validate the fields.  I then used these validation results to have the `ValidatableInput` component automatically renders
 itself with errors, if any.
 * I shared the App's validation errors via React's `Context` framework so that I didn't have to pass them down props to the heavily nested `ValidatableInput` component.
+
 
 
